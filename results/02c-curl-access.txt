@@ -1,0 +1,61 @@
+================================================================
+ (E-1) 노드 내부에서 NodePort 접속 (minikube ssh)
+================================================================
+$ minikube ssh -- curl -s http://localhost:30080
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-2jkkg
+
+$ 여러 번 호출하여 Service 로드 분산 확인:
+--- request 1 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-2jkkg
+--- request 2 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-p6ztv
+--- request 3 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-2jkkg
+--- request 4 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+--- request 5 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-2jkkg
+================================================================
+ (E-2) 호스트(macOS)에서 접속 (kubectl port-forward)
+================================================================
+$ kubectl port-forward svc/hello-app-svc 18080:80 &  (PID=93929)
+(로컬 18080 -> svc 80 -> pod 8080)
+
+$ curl -s http://localhost:18080
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+
+$ 호스트에서 5회 호출:
+--- request 1 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+--- request 2 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+--- request 3 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+--- request 4 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v
+--- request 5 ---
+Hello, world!
+Version: 1.0.0
+Hostname: hello-app-7669cf49f5-6b55v

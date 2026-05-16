@@ -1,0 +1,71 @@
+================================================================
+ (C) Service 상세 — Selector가 Pod IP(Endpoints)와 어떻게 매칭되는지
+================================================================
+$ kubectl describe svc hello-app-svc
+Name:                     hello-app-svc
+Namespace:                default
+Labels:                   app=hello-app
+                          tier=frontend
+Annotations:              description: hello-app 외부 접근용 NodePort 서비스
+Selector:                 app=hello-app,tier=frontend
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.98.24.219
+IPs:                      10.98.24.219
+Port:                     http  80/TCP
+TargetPort:               8080/TCP
+NodePort:                 http  30080/TCP
+Endpoints:                10.244.0.3:8080,10.244.0.4:8080,10.244.0.5:8080
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+
+$ kubectl get endpoints hello-app-svc
+NAME            ENDPOINTS                                         AGE
+hello-app-svc   10.244.0.3:8080,10.244.0.4:8080,10.244.0.5:8080   5m10s
+
+================================================================
+ (D) Deployment 상세 — Annotations 및 Strategy 확인
+================================================================
+$ kubectl describe deploy hello-app
+Name:                   hello-app
+Namespace:              default
+CreationTimestamp:      Sat, 16 May 2026 15:06:00 +0900
+Labels:                 app=hello-app
+                        tier=frontend
+Annotations:            deployment.kubernetes.io/revision: 1
+                        description: Rolling Update & Rollback 실습용 Deployment
+                        kubernetes.io/change-cause: Initial deployment - hello-app v1.0
+Selector:               app=hello-app,tier=frontend
+Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  0 max unavailable, 1 max surge
+Pod Template:
+  Labels:  app=hello-app
+           tier=frontend
+  Containers:
+   hello-app:
+    Image:         gcr.io/google-samples/hello-app:1.0
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Liveness:      http-get http://:8080/ delay=5s timeout=1s period=10s #success=1 #failure=3
+    Readiness:     http-get http://:8080/ delay=2s timeout=1s period=5s #success=1 #failure=3
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   hello-app-7669cf49f5 (3/3 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  5m8s  deployment-controller  Scaled up replica set hello-app-7669cf49f5 from 0 to 3

@@ -1,0 +1,49 @@
+================================================================
+ (A) Pod 라벨 확인 — Label이 실제로 붙어있음을 보여줌
+================================================================
+$ kubectl get pods --show-labels
+NAME                         READY   STATUS    RESTARTS   AGE     LABELS
+hello-app-7669cf49f5-2jkkg   1/1     Running   0          4m54s   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+hello-app-7669cf49f5-6b55v   1/1     Running   0          4m54s   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+hello-app-7669cf49f5-p6ztv   1/1     Running   0          4m54s   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+
+================================================================
+ (B) ReplicaSet 상세 — Selector & 관리하는 Pod 확인
+================================================================
+$ kubectl describe replicaset.apps/hello-app-7669cf49f5
+Name:           hello-app-7669cf49f5
+Namespace:      default
+Selector:       app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+Labels:         app=hello-app
+                pod-template-hash=7669cf49f5
+                tier=frontend
+Annotations:    deployment.kubernetes.io/desired-replicas: 3
+                deployment.kubernetes.io/max-replicas: 4
+                deployment.kubernetes.io/revision: 1
+                description: Rolling Update & Rollback 실습용 Deployment
+                kubernetes.io/change-cause: Initial deployment - hello-app v1.0
+Controlled By:  Deployment/hello-app
+Replicas:       3 current / 3 desired
+Pods Status:    3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=hello-app
+           pod-template-hash=7669cf49f5
+           tier=frontend
+  Containers:
+   hello-app:
+    Image:         gcr.io/google-samples/hello-app:1.0
+    Port:          8080/TCP
+    Host Port:     0/TCP
+    Liveness:      http-get http://:8080/ delay=5s timeout=1s period=10s #success=1 #failure=3
+    Readiness:     http-get http://:8080/ delay=2s timeout=1s period=5s #success=1 #failure=3
+    Environment:   <none>
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Events:
+  Type    Reason            Age    From                   Message
+  ----    ------            ----   ----                   -------
+  Normal  SuccessfulCreate  4m53s  replicaset-controller  Created pod: hello-app-7669cf49f5-6b55v
+  Normal  SuccessfulCreate  4m53s  replicaset-controller  Created pod: hello-app-7669cf49f5-p6ztv
+  Normal  SuccessfulCreate  4m53s  replicaset-controller  Created pod: hello-app-7669cf49f5-2jkkg
