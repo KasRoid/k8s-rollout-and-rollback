@@ -1,0 +1,32 @@
+=== 환경 정보 ===
+Sat May 16 14:53:51 KST 2026
+
+=== minikube status ===
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
+
+=== kubectl get nodes ===
+NAME       STATUS   ROLES           AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION      CONTAINER-RUNTIME
+minikube   Ready    control-plane   2m59s   v1.35.1   192.168.49.2   <none>        Debian GNU/Linux 12 (bookworm)   6.8.0-100-generic   docker://29.2.1
+
+=== kubectl version ===
+Client Version: v1.36.1
+Kustomize Version: v5.8.1
+Server Version: v1.35.1
+
+=== minikube version ===
+minikube version: v1.38.1
+commit: c93a4cb9311efc66b90d33ea03f75f2c4120e9b0
+
+=== colima status ===
+time="2026-05-16T14:53:52+09:00" level=info msg="colima is running using macOS Virtualization.Framework"
+time="2026-05-16T14:53:52+09:00" level=info msg="arch: aarch64"
+time="2026-05-16T14:53:52+09:00" level=info msg="runtime: docker"
+time="2026-05-16T14:53:52+09:00" level=info msg="mountType: virtiofs"
+time="2026-05-16T14:53:52+09:00" level=info msg="docker socket: unix:///Users/sdy/.colima/default/docker.sock"
+time="2026-05-16T14:53:52+09:00" level=info msg="containerd socket: unix:///Users/sdy/.colima/default/containerd.sock"
