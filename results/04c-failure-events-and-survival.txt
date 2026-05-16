@@ -1,0 +1,93 @@
+================================================================
+ (E) 장애 Pod 상세 — 오류 이벤트(Events) 확인
+================================================================
+$ kubectl describe pod/hello-app-5959b68ffc-24wpt
+Name:             hello-app-5959b68ffc-24wpt
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Sat, 16 May 2026 15:26:27 +0900
+Labels:           app=hello-app
+                  pod-template-hash=5959b68ffc
+                  tier=frontend
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.0.9
+IPs:
+  IP:           10.244.0.9
+Controlled By:  ReplicaSet/hello-app-5959b68ffc
+Containers:
+  hello-app:
+    Container ID:   
+    Image:          gcr.io/google-samples/hello-app:3.0
+    Image ID:       
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Liveness:       http-get http://:8080/ delay=5s timeout=1s period=10s #success=1 #failure=3
+    Readiness:      http-get http://:8080/ delay=2s timeout=1s period=5s #success=1 #failure=3
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-bgzzh (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-bgzzh:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  50s                default-scheduler  Successfully assigned default/hello-app-5959b68ffc-24wpt to minikube
+  Normal   BackOff    21s (x2 over 47s)  kubelet            spec.containers{hello-app}: Back-off pulling image "gcr.io/google-samples/hello-app:3.0"
+  Warning  Failed     21s (x2 over 47s)  kubelet            spec.containers{hello-app}: Error: ImagePullBackOff
+  Normal   Pulling    8s (x3 over 49s)   kubelet            spec.containers{hello-app}: Pulling image "gcr.io/google-samples/hello-app:3.0"
+  Warning  Failed     6s (x3 over 48s)   kubelet            spec.containers{hello-app}: Failed to pull image "gcr.io/google-samples/hello-app:3.0": Error response from daemon: manifest for gcr.io/google-samples/hello-app:3.0 not found: manifest unknown: Failed to fetch "3.0"
+  Warning  Failed     6s (x3 over 48s)   kubelet            spec.containers{hello-app}: Error: ErrImagePull
+
+================================================================
+ (F) 장애 중에도 서비스 유지 확인 — v2.0 Pod이 계속 응답
+================================================================
+$ minikube ssh -- 'for i in 1 2 3 4 5; do curl -s http://localhost:30080; done'
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-dv5t2
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc
+
+================================================================
+ (G) Service Endpoints — 실패한 Pod은 자동 제외
+================================================================
+$ kubectl get endpoints hello-app-svc
+NAME            ENDPOINTS                                         AGE
+hello-app-svc   10.244.0.6:8080,10.244.0.7:8080,10.244.0.8:8080   21m
+
+$ kubectl describe svc hello-app-svc | grep -E 'Selector|Endpoints'
+Selector:                 app=hello-app,tier=frontend
+Endpoints:                10.244.0.6:8080,10.244.0.7:8080,10.244.0.8:8080 + 0 more...

@@ -1,0 +1,24 @@
+================================================================
+ (C) 장애 상태 확인 — 모든 리소스
+================================================================
+$ kubectl get pod,rs,deploy -o wide
+NAME                             READY   STATUS             RESTARTS        AGE     IP           NODE       NOMINATED NODE   READINESS GATES
+pod/hello-app-5959b68ffc-24wpt   0/1     ImagePullBackOff   0               26s     10.244.0.9   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-dv5t2   1/1     Running            1 (6m25s ago)   6m30s   10.244.0.6   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-h8d9l   1/1     Running            0               6m16s   10.244.0.8   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-x85hc   1/1     Running            0               6m22s   10.244.0.7   minikube   <none>           <none>
+
+NAME                                   DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES                                SELECTOR
+replicaset.apps/hello-app-5959b68ffc   1         1         0       26s     hello-app    gcr.io/google-samples/hello-app:3.0   app=hello-app,pod-template-hash=5959b68ffc,tier=frontend
+replicaset.apps/hello-app-6fccdb7684   3         3         3       6m30s   hello-app    gcr.io/google-samples/hello-app:2.0   app=hello-app,pod-template-hash=6fccdb7684,tier=frontend
+replicaset.apps/hello-app-7669cf49f5   0         0         0       20m     hello-app    gcr.io/google-samples/hello-app:1.0   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                SELECTOR
+deployment.apps/hello-app   3/3     1            3           20m   hello-app    gcr.io/google-samples/hello-app:3.0   app=hello-app,tier=frontend
+
+================================================================
+ (D) rollout status — progress deadline 전까지 대기 안함
+================================================================
+$ kubectl rollout status deploy/hello-app --timeout=10s (실패 예상)
+Waiting for deployment "hello-app" rollout to finish: 1 out of 3 new replicas have been updated...
+error: timed out waiting for the condition

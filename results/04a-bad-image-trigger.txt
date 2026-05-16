@@ -1,0 +1,11 @@
+================================================================
+ (A) 어노테이션 갱신 — 장애 시나리오 사유 기록
+================================================================
+$ kubectl annotate deploy/hello-app kubernetes.io/change-cause='Bad image hello-app:3.0 (intentional failure test)' --overwrite
+deployment.apps/hello-app annotated
+
+================================================================
+ (B) 존재하지 않는 이미지로 업데이트 (장애 유발)
+================================================================
+$ kubectl set image deploy/hello-app hello-app=gcr.io/google-samples/hello-app:3.0
+deployment.apps/hello-app image updated
