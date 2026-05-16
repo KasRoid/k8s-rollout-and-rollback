@@ -1,0 +1,22 @@
+================================================================
+ (A) 롤백 전 상태 확인 — 어디로 되돌릴지 식별
+================================================================
+$ kubectl rollout history deploy/hello-app
+deployment.apps/hello-app 
+REVISION  CHANGE-CAUSE
+1         Update image to hello-app v2.0
+2         Bad image hello-app:3.0 (intentional failure test)
+3         Bad image hello-app:3.0 (intentional failure test)
+
+
+================================================================
+ (B) 롤백 실행 — 직전 정상 버전(v2.0)으로 복귀
+================================================================
+$ kubectl rollout undo deploy/hello-app
+deployment.apps/hello-app rolled back
+
+================================================================
+ (C) 롤백 완료 대기
+================================================================
+$ kubectl rollout status deploy/hello-app
+deployment "hello-app" successfully rolled out

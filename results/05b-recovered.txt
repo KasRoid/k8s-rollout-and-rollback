@@ -1,0 +1,51 @@
+================================================================
+ (D) 롤백 후 전체 상태 — Pod/RS/Deploy/Svc
+================================================================
+$ kubectl get pod,rs,deploy,svc -o wide
+NAME                             READY   STATUS    RESTARTS        AGE     IP           NODE       NOMINATED NODE   READINESS GATES
+pod/hello-app-6fccdb7684-dv5t2   1/1     Running   1 (8m10s ago)   8m15s   10.244.0.6   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-h8d9l   1/1     Running   0               8m1s    10.244.0.8   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-x85hc   1/1     Running   0               8m7s    10.244.0.7   minikube   <none>           <none>
+
+NAME                                   DESIRED   CURRENT   READY   AGE     CONTAINERS   IMAGES                                SELECTOR
+replicaset.apps/hello-app-5959b68ffc   0         0         0       2m11s   hello-app    gcr.io/google-samples/hello-app:3.0   app=hello-app,pod-template-hash=5959b68ffc,tier=frontend
+replicaset.apps/hello-app-6fccdb7684   3         3         3       8m15s   hello-app    gcr.io/google-samples/hello-app:2.0   app=hello-app,pod-template-hash=6fccdb7684,tier=frontend
+replicaset.apps/hello-app-7669cf49f5   0         0         0       22m     hello-app    gcr.io/google-samples/hello-app:1.0   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                SELECTOR
+deployment.apps/hello-app   3/3     3            3           22m   hello-app    gcr.io/google-samples/hello-app:2.0   app=hello-app,tier=frontend
+
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/hello-app-svc   NodePort    10.98.24.219   <none>        80:30080/TCP   22m   app=hello-app,tier=frontend
+service/kubernetes      ClusterIP   10.96.0.1      <none>        443/TCP        37m   <none>
+
+================================================================
+ (E) 롤백 후 배포 이력 — 새 revision 추가됨
+================================================================
+$ kubectl rollout history deploy/hello-app
+deployment.apps/hello-app 
+REVISION  CHANGE-CAUSE
+1         Update image to hello-app v2.0
+3         Bad image hello-app:3.0 (intentional failure test)
+4         Bad image hello-app:3.0 (intentional failure test)
+
+
+================================================================
+ (F) 정상 복귀 확인 — Service 응답 v2.0
+================================================================
+$ minikube ssh -- 'for i in 1 2 3 4 5; do curl -s http://localhost:30080; done'
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-dv5t2
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
