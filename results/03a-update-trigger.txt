@@ -1,0 +1,11 @@
+================================================================
+ (A) 어노테이션 갱신 — rollout history에 사유 기록
+================================================================
+$ kubectl annotate deploy/hello-app kubernetes.io/change-cause='Update image to hello-app v2.0' --overwrite
+deployment.apps/hello-app annotated
+
+================================================================
+ (B) 이미지 업데이트 — v1.0 → v2.0 (rolling update 트리거)
+================================================================
+$ kubectl set image deploy/hello-app hello-app=gcr.io/google-samples/hello-app:2.0
+deployment.apps/hello-app image updated

@@ -1,0 +1,19 @@
+================================================================
+ (G) v2.0 응답 확인 — Service NodePort 접근
+================================================================
+$ minikube ssh -- 'for i in 1 2 3 4 5; do curl -s http://localhost:30080; done'
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-dv5t2
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-h8d9l
+Hello, world!
+Version: 2.0.0
+Hostname: hello-app-6fccdb7684-x85hc

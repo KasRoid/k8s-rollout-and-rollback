@@ -1,0 +1,56 @@
+================================================================
+ (D) rollout 완료 대기
+================================================================
+$ kubectl rollout status deploy/hello-app
+deployment "hello-app" successfully rolled out
+
+================================================================
+ (E) 업데이트 후 최종 상태
+================================================================
+$ kubectl get pod,rs,deploy,svc -o wide
+NAME                             READY   STATUS    RESTARTS      AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pod/hello-app-6fccdb7684-dv5t2   1/1     Running   1 (41s ago)   46s   10.244.0.6   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-h8d9l   1/1     Running   0             32s   10.244.0.8   minikube   <none>           <none>
+pod/hello-app-6fccdb7684-x85hc   1/1     Running   0             38s   10.244.0.7   minikube   <none>           <none>
+
+NAME                                   DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                                SELECTOR
+replicaset.apps/hello-app-6fccdb7684   3         3         3       46s   hello-app    gcr.io/google-samples/hello-app:2.0   app=hello-app,pod-template-hash=6fccdb7684,tier=frontend
+replicaset.apps/hello-app-7669cf49f5   0         0         0       15m   hello-app    gcr.io/google-samples/hello-app:1.0   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                SELECTOR
+deployment.apps/hello-app   3/3     3            3           15m   hello-app    gcr.io/google-samples/hello-app:2.0   app=hello-app,tier=frontend
+
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/hello-app-svc   NodePort    10.98.24.219   <none>        80:30080/TCP   15m   app=hello-app,tier=frontend
+service/kubernetes      ClusterIP   10.96.0.1      <none>        443/TCP        30m   <none>
+
+================================================================
+ (F) 배포 이력 확인 — change-cause 표시 확인
+================================================================
+$ kubectl rollout history deploy/hello-app
+deployment.apps/hello-app 
+REVISION  CHANGE-CAUSE
+1         Update image to hello-app v2.0
+2         Update image to hello-app v2.0
+
+
+$ kubectl rollout history deploy/hello-app --revision=2
+deployment.apps/hello-app with revision #2
+Pod Template:
+  Labels:	app=hello-app
+	pod-template-hash=6fccdb7684
+	tier=frontend
+  Annotations:	kubernetes.io/change-cause: Update image to hello-app v2.0
+  Containers:
+   hello-app:
+    Image:	gcr.io/google-samples/hello-app:2.0
+    Port:	8080/TCP
+    Host Port:	0/TCP
+    Liveness:	http-get http://:8080/ delay=5s timeout=1s period=10s #success=1 #failure=3
+    Readiness:	http-get http://:8080/ delay=2s timeout=1s period=5s #success=1 #failure=3
+    Environment:	<none>
+    Mounts:	<none>
+  Volumes:	<none>
+  Node-Selectors:	<none>
+  Tolerations:	<none>
+
