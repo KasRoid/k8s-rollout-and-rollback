@@ -1,0 +1,30 @@
+=== 1. 전체 리소스 상태 (Pod, RS, Deployment, Service) ===
+$ kubectl get pod,rs,deploy,svc -o wide
+NAME                             READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pod/hello-app-7669cf49f5-2jkkg   1/1     Running   0          58s   10.244.0.5   minikube   <none>           <none>
+pod/hello-app-7669cf49f5-6b55v   1/1     Running   0          58s   10.244.0.3   minikube   <none>           <none>
+pod/hello-app-7669cf49f5-p6ztv   1/1     Running   0          58s   10.244.0.4   minikube   <none>           <none>
+
+NAME                                   DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                                SELECTOR
+replicaset.apps/hello-app-7669cf49f5   3         3         3       58s   hello-app    gcr.io/google-samples/hello-app:1.0   app=hello-app,pod-template-hash=7669cf49f5,tier=frontend
+
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                SELECTOR
+deployment.apps/hello-app   3/3     3            3           58s   hello-app    gcr.io/google-samples/hello-app:1.0   app=hello-app,tier=frontend
+
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/hello-app-svc   NodePort    10.98.24.219   <none>        80:30080/TCP   58s   app=hello-app,tier=frontend
+service/kubernetes      ClusterIP   10.96.0.1      <none>        443/TCP        16m   <none>
+
+=== 2. Pod 상세 (-o wide) ===
+$ kubectl get pods -o wide
+NAME                         READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+hello-app-7669cf49f5-2jkkg   1/1     Running   0          58s   10.244.0.5   minikube   <none>           <none>
+hello-app-7669cf49f5-6b55v   1/1     Running   0          58s   10.244.0.3   minikube   <none>           <none>
+hello-app-7669cf49f5-p6ztv   1/1     Running   0          58s   10.244.0.4   minikube   <none>           <none>
+
+=== 3. 노드/서비스 접근 정보 ===
+$ minikube ip
+192.168.49.2
+$ kubectl get svc hello-app-svc
+NAME            TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+hello-app-svc   NodePort   10.98.24.219   <none>        80:30080/TCP   58s
